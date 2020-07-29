@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "target": "esnext",
+    "experimentalDecorators": true,
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
@@ -16,10 +18,8 @@
       "@/navigator/*": ["navigator/*"]
     },
     "noEmit": true,
-    "strict": true,
-    "target": "esnext"
+    "strict": true
   },
-
   "exclude": [
     "node_modules",
     "babel.config.js",
