@@ -1,5 +1,5 @@
 // ES5 写法
-import {decorate, observable, computed, autorun} from 'mobx';
+import {decorate, observable, computed, autorun, action} from 'mobx';
 class TodoStore {
   constructor() {
     this.todos = [];
@@ -33,5 +33,6 @@ decorate(TodoStore, {
   todos: observable,
   completedTodosCount: computed,
   report: computed,
+  addTodo: action,
 });
 export default TodoStore;
