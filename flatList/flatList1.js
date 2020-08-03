@@ -1,4 +1,4 @@
-import React, {useCallback, useState, memo} from 'react';
+import React, {useEffect, useState, memo} from 'react';
 import {
   FlatList,
   TouchableOpacity,
@@ -94,6 +94,13 @@ function getList() {
     }, 1000);
   });
 }
+function getFirstList() {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve(DATA);
+    }, 1000);
+  });
+}
 
 const Separator = () => {
   return (
@@ -108,21 +115,9 @@ const Separator = () => {
   );
 };
 
-const Empty = () => {
-  return (
-    <View
-      style={{
-        height: 200,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>
-      <Text>暂无数据</Text>
-    </View>
-  );
-};
 let isScroll = false;
 export default memo(() => {
-  const [data, setData] = useState(DATA);
+  const [data, setData] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [isError, setError] = useState(false); // 是否加载出错
@@ -135,12 +130,42 @@ export default memo(() => {
   };
 
   // 下拉刷新
-  const onRefresh = () => {
+  const onRefresh = async () => {
     setRefreshing(true);
-    setTimeout(() => {
-      setData(DATA);
-      setRefreshing(false);
-    }, 1000);
+    try {
+      const res = await getFirstList();
+      setData(res);
+      setError(false);
+    } catch (e) {
+      setError(true);
+    }
+    setRefreshing(false);
+  };
+
+  // 首次加载数据
+  useEffect(() => {
+    onRefresh();
+  }, []);
+
+  const Empty = () => {
+    if (refreshing) {
+      return (
+        <View>
+          <Text>数据加载中...</Text>
+        </View>
+      );
+    } else if (isError) {
+      return (
+        <View>
+          <Text>网络好像出了点问题</Text>
+        </View>
+      );
+    }
+    return (
+      <View>
+        <Text>暂无数据</Text>
+      </View>
+    );
   };
 
   // 上拉加载
@@ -170,6 +195,9 @@ export default memo(() => {
   };
 
   const ListFooter = () => {
+    if (data.length === 0) {
+      return null;
+    }
     return (
       <>
         {data.length > 30 ? (
