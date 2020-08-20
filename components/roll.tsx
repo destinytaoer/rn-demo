@@ -1,4 +1,4 @@
-import React, {FC, useRef, useEffect, useState, useCallback} from 'react';
+import React, {FC, useRef, useEffect, useState, ReactNode} from 'react';
 import {View, Text, StyleSheet, Animated, Easing} from 'react-native';
 
 const data = [
@@ -9,24 +9,29 @@ const data = [
 ];
 
 interface IProps {
+  data: Array<object | string>;
   rollLength?: number;
   itemHeight?: number;
+  separatorHeight?: number;
+  emptyComponent?: ReactNode;
+  renderItem?: (item: object | string) => ReactNode;
 }
 
 const Roll: FC<IProps> = (props) => {
-  const {rollLength = 3, itemHeight = 30} = props;
+  const {
+    rollLength = 3,
+    itemHeight = 30,
+    separatorHeight = StyleSheet.hairlineWidth,
+  } = props;
 
   const rollAnimRef = useRef(new Animated.Value(0));
   const [viewData, setViewData] = useState(data);
 
-  // useEffect(() => {
-  //   return () => rollAnim.stopAnimation();
-  // }, [rollAnim]);
-
   useEffect(() => {
+    let animation: Animated.CompositeAnimation; // 保存这个动画对象，用于停止动画
     const roll = (index: number, total: number) => {
       let len = index + 1;
-      let animation = Animated.timing(rollAnimRef.current, {
+      animation = Animated.timing(rollAnimRef.current, {
         toValue: -itemHeight * len, // 变化值
         duration: 500, // 动画时间
         delay: 1000, // 延时时间
@@ -46,14 +51,11 @@ const Roll: FC<IProps> = (props) => {
           }
         }
       });
-      // 将这个动画对象返回，用于停止动画
-      return animation;
     };
-    let animation: Animated.CompositeAnimation;
     if (data.length > rollLength) {
       // 如果满足了动画条件，则数据后面补上可视区数量的数据，方便滚动
       setViewData(data.concat(data.slice(0, rollLength)));
-      animation = roll(0, data.length);
+      roll(0, data.length);
     } else {
       setViewData(data);
     }
@@ -70,8 +72,11 @@ const Roll: FC<IProps> = (props) => {
     );
   };
 
+  const maxHeight =
+    rollLength > 0 ? itemHeight * rollLength - separatorHeight : 'auto';
+
   return (
-    <View style={[styles.container, {maxHeight: itemHeight * rollLength}]}>
+    <View style={[styles.container, {maxHeight}]}>
       <Animated.View
         style={{
           transform: [{translateY: rollAnimRef.current}],
@@ -87,12 +92,12 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 10,
     overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'red',
   },
   itemWrapper: {
     justifyContent: 'center',
     height: 30,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: 'red',
   },
   text: {
     fontSize: 16,
