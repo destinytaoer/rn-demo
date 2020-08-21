@@ -1,13 +1,15 @@
 import React, {FC, memo} from 'react';
 import {View, StyleSheet} from 'react-native';
-import Progress from './progress';
-import Roll from './roll';
+// import Progress from './progress';
+// import Roll from './roll';
+import DrawLottery from './DrawLottery';
 
 const Home: FC = () => {
   return (
     <View style={styles.container}>
       {/* <Progress percent={30} text="已抢" /> */}
-      <Roll />
+      {/* <Roll /> */}
+      <DrawLottery />
     </View>
   );
 };
