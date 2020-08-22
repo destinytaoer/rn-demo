@@ -98,12 +98,14 @@ const DrawLottery: FC = () => {
 const styles = StyleSheet.create({
   container: {
     // flex: 1,
-    padding: 10,
-    paddingTop: 0,
+    paddingHorizontal: 25,
+    paddingVertical: 30,
+    // justifyContent: 'center',
+    alignItems: 'center',
   },
   prize: {
-    width: 30,
-    height: 30,
+    width: 60,
+    height: 60,
   },
 });
 

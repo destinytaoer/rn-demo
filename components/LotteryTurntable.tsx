@@ -172,14 +172,6 @@ const LotteryTurntable: FC<IProps> = (props) => {
     );
   };
 
-  if (prizes.length === 0) {
-    return (
-      <View>
-        <Text>还没有数据</Text>
-      </View>
-    );
-  }
-
   return (
     <View style={styles.container}>
       <View style={styles.row}>
@@ -212,7 +204,7 @@ const LotteryTurntable: FC<IProps> = (props) => {
 
 const styles = StyleSheet.create({
   container: {
-    width: 140,
+    // width: 140,
     // justifyContent: 'center',
     alignItems: 'center',
   },
@@ -221,12 +213,21 @@ const styles = StyleSheet.create({
   },
   specialRow: {},
   drawButton: {
-    width: 60,
-    height: 60,
+    width: 130,
+    height: 130,
+    margin: 5,
+    // backgroundColor: '#ff0',
+    borderRadius: 10,
   },
   prize: {
-    width: 30,
-    height: 30,
+    width: 60,
+    height: 60,
+    borderRadius: 10,
+    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 5,
+    // backgroundColor: '#e3f3f3',
   },
   mask: {
     ...StyleSheet.absoluteFillObject,
