@@ -3,7 +3,7 @@ import {View, Text, ImageBackground, Image, StyleSheet} from 'react-native';
 import LotteryTurntable from './LotteryTurntable';
 import {IPrize} from './types';
 
-const itemImg = require('./draw-un-selected.png');
+const itemImg = require('./assets/draw-un-selected.png');
 const prizesData: IPrize[] = [
   {id: '1', source: itemImg},
   {id: '2', source: itemImg},
@@ -79,14 +79,14 @@ const DrawLottery: FC = () => {
   return (
     <ImageBackground
       style={styles.container}
-      source={require('./draw-lottery-bg.png')}
+      source={require('./assets/draw-lottery-bg.png')}
       resizeMode="stretch">
       <Text>hello</Text>
       <LotteryTurntable
         prizes={prizes}
         prize={prize}
-        drawImg={require('./draw-active.png')}
-        drawDisbaleImg={require('./draw-disable.png')}
+        drawImg={require('./assets/draw-active.png')}
+        drawDisbaleImg={require('./assets/draw-disable.png')}
         drawRemainCount={remainCount}
         renderItem={renderItem}
         onPress={handlePress}
