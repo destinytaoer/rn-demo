@@ -3,7 +3,7 @@ function animation(defaultSpeed, cb) {
   let count = 0;
   step(defaultSpeed);
 
-  function step(speed = 0) {
+  function step(speed = defaultSpeed) {
     cancel();
     if (count < speed) {
       count++;
