@@ -17,7 +17,8 @@ import {
   ImageSourcePropType,
 } from 'react-native';
 import {IPrize} from './types';
-import LuckDraw from './LuckDraw';
+// import LuckDraw from './LuckDraw';
+import animation from './animation';
 
 interface IProps {
   prizes: Array<any>; // 奖品列表
@@ -37,13 +38,13 @@ const LotteryTurntable: FC<IProps> = (props) => {
     prize,
     drawImg,
     drawDisbaleImg,
-    rotateTimes = 3,
+    rotateTimes = 4,
     drawRemainCount = 0,
     onPress,
     onWinPrize,
   } = props;
 
-  const [activePrize, setActivePrize] = useState('1');
+  const [activePrize, setActivePrize] = useState<string>('');
 
   const isBtnDisabled = drawRemainCount === 0;
 
@@ -56,93 +57,59 @@ const LotteryTurntable: FC<IProps> = (props) => {
   }, [onPress]);
 
   const drawLottery = useCallback(() => {
-    // const rotateDir = [
-    //   {index: 0, next: 1},
-    //   {index: 1, next: 2},
-    //   {index: 2, next: 3},
-    //   {index: 3, next: 4},
-    //   {index: 4, next: 5},
-    //   {index: 5, next: 6},
-    //   {index: 6, next: 7},
-    //   {index: 7, next: 8},
-    //   {index: 8, next: 9},
-    //   {index: 9, next: 10},
-    //   {index: 10, next: 11},
-    //   {index: 11, next: 0},
-    // ];
-
-    // 初始化抽奖, 3代表圈数， 8代表速度，也代表时间片的个数
-    // const luckDrawFn = new LuckDraw(prizes, rotateDir, 3, 8);
-
-    // 中奖id，请求服务端接口拿到
-
-    // luckDrawFn.run(
-    //   prize!.id, //中奖id
-    //   (params: IPrize) => {
-    //     // 停留在当前格子的回调函数
-    //     // 拿到当前 active 状态的 id
-    //     setActivePrize(params.id);
-    //     console.log('xxx');
-    //   },
-    //   (params: IPrize) => {
-    //     // 最终停止的回调函数
-    //     //最后转盘停止的地方，可以弹出奖励弹框或其他操作
-    //     setActivePrize(params.id);
-    //   },
-    // );
     isDrawing.current = true;
-    let rotated = 0;
-    let activeNumber = 0;
-    let activeId: string;
-    const prizesNumber = prizes.length;
-    let timer: number;
-    timer = requestAnimationFrame(step);
-    // 通过定时器 嵌套控制旋转的速度
-    // 没有库存的情况需要跳过
-    function step() {
-      if (rotated > rotateTimes - 1) {
-        clearInterval(interval);
-        interval = setInterval(() => {
-          if (rotated > rotateTimes) {
-            isDrawing.current = false;
-            clearInterval(interval);
-            return;
-          }
-          if (activeNumber >= prizesNumber - 1) {
-            rotated += 1;
-            activeNumber = 0;
-            activeId = prizes[activeNumber].id;
-          } else {
-            activeNumber += 1;
-            activeId = prizes[activeNumber].id;
-          }
-          setActivePrize(activeId);
-          if (prize!.id === activeId) {
-            isDrawing.current = false;
-            clearInterval(interval);
-            // 先转完 延迟100毫秒在弹出弹窗
-            setTimeout(() => {
-              onWinPrize && onWinPrize();
-            }, 500);
-          }
-        }, 200);
+    const index = prizes.findIndex((item) => item.id === prize!.id);
+    const len = prizes.length;
+
+    let count = 0;
+    let minSpeed = 10;
+    let maxSpeed = 4;
+    let speed = minSpeed;
+    // 达到这个次数时, 加速停止, 每次 speed - 1, 来达到加速效果, 所以使用 speed 来判断加速区间
+    const addStop = minSpeed - maxSpeed;
+    // 匀速停止
+    const uniformStop = (rotateTimes - 1) * len;
+
+    // 总跳动次数
+    const total = uniformStop + index;
+
+    setActivePrize('1');
+
+    animation(speed, (next: (speed: number) => void, cancel: () => void) => {
+      if (count < addStop) {
+        // 加速
+        speed--;
+        next(speed);
+      } else if (count >= addStop && count < uniformStop) {
+        // 匀速
+        next(speed);
+      } else if (count >= uniformStop && count < total) {
+        // 减速
+        speed += 5;
+        next(speed);
+      } else {
+        // 停止
+        isDrawing.current = false;
+        // 先转完 延迟100毫秒在弹出弹窗
+        cancel();
+        onWinPrize && onWinPrize();
+        setTimeout(() => {
+          setActivePrize('');
+        }, 500);
         return;
       }
-      if (activeNumber >= prizesNumber - 1) {
-        rotated += 1;
-        activeNumber = 0;
-        activeId = prizes[activeNumber].id;
-      } else {
-        activeNumber += 1;
-        activeId = prizes[activeNumber].id;
-      }
-      console.log(activeId, activeNumber);
+
+      count++;
+      const activeId = prizes[count % len].id;
       setActivePrize(activeId);
-    }
+    });
   }, [prize, onWinPrize, prizes, rotateTimes]);
 
   useEffect(() => {
     if (prize) {
+      if (isDrawing.current) {
+        return;
+      }
       drawLottery();
     }
   }, [prize]);
@@ -216,7 +183,7 @@ const styles = StyleSheet.create({
     width: 130,
     height: 130,
     margin: 5,
-    // backgroundColor: '#ff0',
+    backgroundColor: '#ff0',
     borderRadius: 10,
   },
   prize: {
@@ -227,11 +194,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     margin: 5,
-    // backgroundColor: '#e3f3f3',
+    backgroundColor: '#e3f3f3',
   },
   mask: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0, 0.5)',
+    backgroundColor: 'rgb(255,202, 0)',
+    opacity: 0.5,
     zIndex: 1,
   },
 });
