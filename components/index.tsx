@@ -1,24 +1,43 @@
-import React, {FC, memo} from 'react';
-import {View, StyleSheet} from 'react-native';
+import React, { FC, memo, useState } from "react";
+import { View, Button, StyleSheet, TextInput } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 // import Progress from './progress';
 // import Roll from './roll';
-import DrawLottery from './DrawLottery';
+import Modal from "./KsModal";
+import RowItemInput from "./RowItemInput";
 
 const Home: FC = () => {
+  const [visible, setVisible] = useState(false);
+
+  const hide = () => {
+    setVisible(false);
+  };
+
+  const show = () => {
+    setVisible(true);
+  };
+
   return (
-    <View style={styles.container}>
-      {/* <Progress percent={30} text="已抢" /> */}
-      {/* <Roll /> */}
-      <DrawLottery />
-    </View>
+    <SafeAreaView style={{ flex: 1 }}>
+      <Button title="haha" onPress={show} />
+      <Modal direction="bottom" visible={visible} requestClose={hide}>
+        <View style={styles.container}>
+          <RowItemInput keyboardType="numeric" />
+          <RowItemInput keyboardType="numeric" />
+        </View>
+      </Modal>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    // flex: 1,
+    padding: 10,
+    height: 200,
+    backgroundColor: "red",
+    // justifyContent: 'center',
+    // alignItems: 'center',
   },
 });
 

@@ -1,0 +1,16 @@
+{
+  "root": true,
+  "extends": [
+    "@react-native-community/eslint-config",
+    "plugin:prettier/recommended"
+  ],
+  "rules": {
+    "react-native/no-inline-styles": "off",
+    "no-bitwise": "off",
+    "handle-callback-err": "off",
+    "no-shadow": "off",
+    "no-catch-shadow": "off",
+    "no-useless-catch": "off",
+    "radix": "off"
+  }
+}

@@ -11,11 +11,24 @@
     "moduleResolution": "node",
     "baseUrl": "./src",
     "paths": {
-      "@/components/*": ["components/*"],
-      "@/assets/*": ["assets/*"],
-      "@/utils/*": ["utils/*"],
-      "@/pages/*": ["pages/*"],
-      "@/navigator/*": ["navigator/*"]
+      "@components/*": [
+        "components/*"
+      ],
+      "@assets/*": [
+        "assets/*"
+      ],
+      "@utils/*": [
+        "utils/*"
+      ],
+      "@pages/*": [
+        "pages/*"
+      ],
+      "@navigator/*": [
+        "navigator/*"
+      ],
+      "@styles/*": [
+        "styles/*"
+      ]
     },
     "noEmit": true,
     "strict": true
